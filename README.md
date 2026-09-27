@@ -18,6 +18,10 @@ Socket.io for real-time messaging, MongoDB for persistent chat history.
 - Messages rendered as plain text only (no HTML injection)
 - Responsive UI (mobile + desktop)
 
+---------
+Live Demo
+
+🌐 https://chat-application-peach-six.vercel.app/
 ## Tech Stack
 
 **Frontend:** React 18, Vite 5, socket.io-client
