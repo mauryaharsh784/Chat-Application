@@ -8,15 +8,23 @@ const { isDatabaseConnected } = require('./config/database');
 function createApp() {
   const app = express();
 
-  const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+  const clientUrl = process.env.CLIENT_URL;
+
+  if (!clientUrl) {
+    console.warn('[CORS] CLIENT_URL is not set');
+  } else {
+    console.log(`[CORS] Allowed origin: ${clientUrl}`);
+  }
 
   app.use(helmet());
+
   app.use(
     cors({
       origin: clientUrl,
       methods: ['GET', 'POST'],
     })
   );
+
   app.use(express.json({ limit: '10kb' }));
 
   app.get('/health', (req, res) => {
