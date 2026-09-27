@@ -4,6 +4,9 @@ const messageController = require('../controllers/messageController');
 const router = express.Router();
 
 router.get('/messages', messageController.getMessages);
+
 router.post('/messages', messageController.createMessage);
+
+router.delete('/messages/:id', messageController.deleteMessage);
 
 module.exports = router;

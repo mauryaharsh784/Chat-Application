@@ -7,41 +7,78 @@ const messageService = require('../services/messageService');
 async function getMessages(req, res, next) {
   try {
     const messages = await messageService.getMessages();
-    res.status(200).json({ success: true, data: messages });
+
+    res.status(200).json({
+      success: true,
+      data: messages,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+function getIo(req) {
+  return req.app.get('io');
+}
+
+/**
+ * POST /api/messages
+ * Creates and persists a message via REST.
+ */
+async function createMessage(req, res, next) {
+  try {
+    const { username, message } = req.body || {};
+
+    const saved = await messageService.createMessage({
+      username,
+      message,
+    });
+
+    const io = getIo(req);
+
+    if (io) {
+      io.emit('new_message', saved);
+    }
+
+    res.status(201).json({
+      success: true,
+      data: saved,
+    });
   } catch (err) {
     next(err);
   }
 }
 
 /**
- * POST /api/messages
- * Creates and persists a message via REST (e.g. for non-socket clients,
- * or as a fallback). The Socket.io layer does NOT also insert this same
- * message again — see sockets/chatSocket.js and services/messageService.js
- * for the single-write design.
- *
- * Note: messages created through this endpoint are broadcast to connected
- * Socket.io clients so every client stays in sync regardless of which
- * transport was used to send the message.
+ * DELETE /api/messages/:id
+ * Deletes a message from MongoDB.
  */
-function getIo(req) {
-  return req.app.get('io');
-}
-
-async function createMessage(req, res, next) {
+async function deleteMessage(req, res, next) {
   try {
-    const { username, message } = req.body || {};
-    const saved = await messageService.createMessage({ username, message });
+    const { id } = req.params;
+
+    const deleted = await messageService.deleteMessage(id);
 
     const io = getIo(req);
+
+    // Tell all connected clients to remove this message
     if (io) {
-      io.emit('new_message', saved);
+      io.emit('message_deleted', {
+        _id: String(deleted._id),
+      });
     }
 
-    res.status(201).json({ success: true, data: saved });
+    res.status(200).json({
+      success: true,
+      data: deleted,
+    });
   } catch (err) {
     next(err);
   }
 }
 
-module.exports = { getMessages, createMessage };
+module.exports = {
+  getMessages,
+  createMessage,
+  deleteMessage,
+};
