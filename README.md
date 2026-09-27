@@ -413,3 +413,12 @@ Never commit `.env` — only `.env.example` is tracked (see `.gitignore`).
   implemented, per the instruction to not sacrifice core functionality for
   optional bonus features — typing indicators and online users (the
   higher-priority bonuses) were implemented and tested instead.
+  ## 👨‍💻 Author
+
+**Harsh Vardhan Maurya** || AI Fullstack Developer
+
+**Type:** Real-Time Chat Application
+**Frontend:** React + Vite
+**Backend:** Node.js + Express + Socket.io
+**Database:** MongoDB
+
